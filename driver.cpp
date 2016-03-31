@@ -28,7 +28,10 @@ int main(int argc, char** argv) {
         }
     }
     
-    BRDAMY004::FileReader FileReader = BRDAMY004::FileReader(inputFile);
+    BRDAMY004::HuffmanTree tree;
+    tree.fileReader(inputFile);
+    tree.createQueue();
+    tree.insertNode();
     
     return 0;
 }

@@ -16,13 +16,6 @@
 namespace BRDAMY004{
     
     
-    
-    class FileReader{
-    public:
-        std::unordered_map<char, int> characterMap;
-        FileReader(std::string fileName);
-    };
-    
     class HuffmanNode{
     private:
         char letter;
@@ -30,27 +23,31 @@ namespace BRDAMY004{
         std::shared_ptr<HuffmanNode> leftChild;
         std::shared_ptr<HuffmanNode> rightChild;
     public:
-        HuffmanNode(char l, int f);
+        HuffmanNode(char l, int f, std::shared_ptr<HuffmanNode> lChild, std::shared_ptr<HuffmanNode> rChild);
         ~HuffmanNode();
         
         int getFrequency() const;
+        char getChar() const;
     };
     
     class CompareQueue{
     public:
         CompareQueue();
-        bool operator() (const HuffmanNode& a, const HuffmanNode& b) const;
+        bool operator() (const std::shared_ptr<HuffmanNode>& a, const std::shared_ptr<HuffmanNode>& b) const;
     };
     
     class HuffmanTree{
     private:
+        std::unordered_map<char, int> characterMap;
         std::shared_ptr<HuffmanNode> root;
-        std::priority_queue<HuffmanNode, std::vector<HuffmanNode>, CompareQueue> treeQueue;
+        std::priority_queue<std::shared_ptr<HuffmanNode>, std::vector<std::shared_ptr<HuffmanNode>>, CompareQueue> treeQueue;
     public:
         HuffmanTree();
         ~HuffmanTree();
         
-        void insertNode(char letter, int frequency);
+        void fileReader(std::string fileName);
+        void createQueue();
+        void insertNodes();
     };
 }
 
