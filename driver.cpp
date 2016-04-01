@@ -31,7 +31,9 @@ int main(int argc, char** argv) {
     BRDAMY004::HuffmanTree tree;
     tree.fileReader(inputFile);
     tree.createQueue();
-    tree.insertNode();
+    tree.insertNodes();
+    tree.createCodeTable();
+    tree.compressFile(inputFile, outputFile);
     
     return 0;
 }

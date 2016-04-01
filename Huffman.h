@@ -28,6 +28,8 @@ namespace BRDAMY004{
         
         int getFrequency() const;
         char getChar() const;
+        std::shared_ptr<HuffmanNode> getLeft();
+        std::shared_ptr<HuffmanNode> getRight();
     };
     
     class CompareQueue{
@@ -38,7 +40,9 @@ namespace BRDAMY004{
     
     class HuffmanTree{
     private:
+        //std::string textFile = "";
         std::unordered_map<char, int> characterMap;
+        std::unordered_map<char, std::string> codeTable;
         std::shared_ptr<HuffmanNode> root;
         std::priority_queue<std::shared_ptr<HuffmanNode>, std::vector<std::shared_ptr<HuffmanNode>>, CompareQueue> treeQueue;
     public:
@@ -48,6 +52,9 @@ namespace BRDAMY004{
         void fileReader(std::string fileName);
         void createQueue();
         void insertNodes();
+        void traverseTree(std::shared_ptr<HuffmanNode> node, int left, std::string code);
+        void createCodeTable();
+        void compressFile(std::string fileName, std::string outputFile);
     };
 }
 

@@ -12,8 +12,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <fstream>
-#include <c++/5/bits/stl_pair.h>
-#include <c++/5/ostream>
+#include <sstream>
 
 namespace BRDAMY004{
     
@@ -32,6 +31,14 @@ namespace BRDAMY004{
         return letter;
     }
     
+    std::shared_ptr<HuffmanNode> HuffmanNode::getLeft(){
+        return HuffmanNode::leftChild;
+    }
+    
+    std::shared_ptr<HuffmanNode> HuffmanNode::getRight(){
+        return HuffmanNode::rightChild;
+    }
+    
     HuffmanNode::~HuffmanNode(){
         
     }
@@ -46,16 +53,26 @@ namespace BRDAMY004{
             if (a.get()->getFrequency() > b.get()->getFrequency()){
                 return true;
             }
+            else if (a.get()->getFrequency() == b.get()->getFrequency()){
+                if (a.get()->getChar() > b.get()->getChar()){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
             else{
                 return false;
             }
     }
     
     
-    // HuffmanTree class
+  // HuffmanTree class
+    
     HuffmanTree::HuffmanTree(){
         
     }
+    
     
     void HuffmanTree::fileReader(std::string fileName){
         std::ifstream fileStream(fileName.c_str(), std::ios::in);
@@ -82,6 +99,7 @@ namespace BRDAMY004{
         fileStream.close();
     }
     
+    
     void HuffmanTree::createQueue(){
         for (std::unordered_map<char, int>::iterator i = characterMap.begin(); i != characterMap.end(); i++){
             std::shared_ptr<HuffmanNode> node(new HuffmanNode(i -> first, i -> second, nullptr, nullptr));
@@ -89,6 +107,7 @@ namespace BRDAMY004{
         }
         
     }
+    
     
     void HuffmanTree::insertNodes(){
         if (!treeQueue.empty()){
@@ -109,6 +128,71 @@ namespace BRDAMY004{
             }
         }
     }
+    
+    
+    void HuffmanTree::traverseTree(std::shared_ptr<HuffmanNode> node, int left, std::string code){
+        if (node == nullptr){
+            //code = "";
+            return;
+        }
+        if (left == 0){
+            code = code +"0";
+        }
+        else if (left == 1){
+            code = code + "1";
+        }
+        traverseTree(node.get() -> getLeft(), 0, code);
+        if (node.get() -> getChar() != 0){
+            codeTable[node.get() -> getChar()] = code;
+        }
+        
+        traverseTree(node -> getRight(), 1, code);
+    }
+    
+    
+    void HuffmanTree::createCodeTable(){
+        std::string code = "";
+        int left = 2;
+        traverseTree(root, 2, code);
+        
+        for (std::unordered_map<char, std::string>::iterator i = codeTable.begin(); i != codeTable.end(); i++){
+            std::cout << i->first << ":" <<i->second << std::endl;
+        }
+    }
+    
+    
+    void HuffmanTree::compressFile(std::string fileName, std::string outputFile){
+        std::ifstream fileStream(fileName.c_str(), std::ios::in);
+        std::string textFile;
+        std::string stringCode = "";
+        if (!fileStream){
+            std::cerr << "File open failed!" << std::endl;
+        }
+        std::ostringstream oss;
+        oss << fileStream.rdbuf();
+        textFile = oss.str();
+        
+        fileStream.close();
+        
+        textFile.erase(textFile.length() -1);
+        
+        for (int i=0; i<textFile.length(); i++){
+            stringCode += codeTable[textFile[i]];
+        }
+        
+        std::string headerFile = outputFile + ".hdr";
+        std::ofstream writeHeader(headerFile.c_str(), std::ios::out);
+        writeHeader << codeTable.size() << std::endl;
+        for (std::unordered_map<char, std::string>::iterator i = codeTable.begin(); i != codeTable.end(); i++){
+            writeHeader << i->first << ":" << i->second << std::endl;
+        }
+        writeHeader.close();
+        
+        std::ofstream writeBlock(outputFile.c_str());
+        writeBlock << stringCode.c_str();
+        writeBlock.close();
+    }
+    
     
     HuffmanTree::~HuffmanTree(){
         root = nullptr;
