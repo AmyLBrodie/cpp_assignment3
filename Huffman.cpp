@@ -18,9 +18,39 @@ namespace BRDAMY004{
     
 
     
-    // HuffmanNode class
+// HuffmanNode class
     HuffmanNode::HuffmanNode(char l, int f, std::shared_ptr<HuffmanNode> lChild, std::shared_ptr<HuffmanNode> rChild) : letter(l), frequency(f), leftChild(lChild), rightChild(rChild){
         
+    }
+    
+    //copy constructor
+    HuffmanNode::HuffmanNode(const HuffmanNode& rhs): letter(rhs.letter), frequency(rhs.frequency), leftChild(rhs.leftChild), rightChild(rhs.rightChild){
+        
+    }
+    
+    //move constructor
+    HuffmanNode::HuffmanNode(HuffmanNode&& rhs): letter(rhs.letter), frequency(rhs.frequency), leftChild(std::move(rhs.leftChild)), rightChild(std::move(rhs.rightChild)){
+        
+    }
+    
+    //copy assignment operator
+    HuffmanNode & HuffmanNode::operator =(const HuffmanNode& rhs){
+        if (this != &rhs){
+            letter = rhs.letter;
+            frequency = rhs.frequency;
+            leftChild = rhs.leftChild;
+            rightChild = rhs.rightChild;
+        }
+    }
+    
+    //move assignment operator
+    HuffmanNode & HuffmanNode::operator =(const HuffmanNode&& rhs){
+        if (this != &rhs){
+            letter = rhs.letter;
+            frequency = rhs.frequency;
+            leftChild = std::move(leftChild);
+            rightChild = std::move(rightChild);
+        }
     }
     
     int HuffmanNode::getFrequency() const{
@@ -40,7 +70,8 @@ namespace BRDAMY004{
     }
     
     HuffmanNode::~HuffmanNode(){
-        
+        rightChild = nullptr;
+        leftChild = nullptr;
     }
     
     
@@ -73,6 +104,35 @@ namespace BRDAMY004{
         
     }
     
+    //copy constructor
+    HuffmanTree::HuffmanTree(const HuffmanTree& rhs) : characterMap(rhs.characterMap), codeTable(rhs.codeTable), root(rhs.root), treeQueue(rhs.treeQueue){
+        
+    }
+    
+    //move constructor
+    HuffmanTree::HuffmanTree(HuffmanTree&& rhs) : characterMap(std::move(rhs.characterMap)), codeTable(std::move(rhs.codeTable)), root(std::move(rhs.root)), treeQueue(std::move(rhs.treeQueue)){
+        
+    }
+    
+    //copy assignment operator
+    HuffmanTree & HuffmanTree::operator =(const HuffmanTree& rhs){
+        if (this != &rhs){
+            characterMap = rhs.characterMap;
+            codeTable = rhs.codeTable;
+            root = rhs.root;
+            treeQueue = rhs.treeQueue;
+        }
+    }
+    
+    //move assignment operator
+    HuffmanTree & HuffmanTree::operator =(const HuffmanTree&& rhs){
+        if (this != &rhs){
+            characterMap = std::move(rhs.characterMap);
+            codeTable = std::move(rhs.codeTable);
+            root = std::move(rhs.root);
+            treeQueue = std::move(rhs.treeQueue);
+        }
+    }
     
     void HuffmanTree::fileReader(std::string fileName){
         std::ifstream fileStream(fileName.c_str(), std::ios::in);
@@ -142,6 +202,7 @@ namespace BRDAMY004{
             code = code + "1";
         }
         traverseTree(node.get() -> getLeft(), 0, code);
+        
         if (node.get() -> getChar() != 0){
             codeTable[node.get() -> getChar()] = code;
         }
@@ -155,11 +216,16 @@ namespace BRDAMY004{
         int left = 2;
         traverseTree(root, 2, code);
         
-        for (std::unordered_map<char, std::string>::iterator i = codeTable.begin(); i != codeTable.end(); i++){
-            std::cout << i->first << ":" <<i->second << std::endl;
-        }
+        //for (std::unordered_map<char, std::string>::iterator i = codeTable.begin(); i != codeTable.end(); i++){
+            //std::cout << i->first << ":" <<i->second << std::endl;
+        //}
     }
     
+    
+    int HuffmanTree::computeBytes(std::string codeString){
+        int nBits = codeString.length();
+        return (nBits/8) + (nBits%8 ? 1 : 0);
+    }
     
     void HuffmanTree::compressFile(std::string fileName, std::string outputFile){
         std::ifstream fileStream(fileName.c_str(), std::ios::in);
@@ -180,6 +246,8 @@ namespace BRDAMY004{
             stringCode += codeTable[textFile[i]];
         }
         
+        std::cout << "Packed file size: " << HuffmanTree::computeBytes(stringCode) << " bytes" << std::endl;
+        
         std::string headerFile = outputFile + ".hdr";
         std::ofstream writeHeader(headerFile.c_str(), std::ios::out);
         writeHeader << codeTable.size() << std::endl;
@@ -191,6 +259,10 @@ namespace BRDAMY004{
         std::ofstream writeBlock(outputFile.c_str());
         writeBlock << stringCode.c_str();
         writeBlock.close();
+    }
+    
+    std::unordered_map<char, int> HuffmanTree::getCharacterMap(){
+        return characterMap;
     }
     
     

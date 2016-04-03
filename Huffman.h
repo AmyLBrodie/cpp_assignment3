@@ -24,6 +24,10 @@ namespace BRDAMY004{
         std::shared_ptr<HuffmanNode> rightChild;
     public:
         HuffmanNode(char l, int f, std::shared_ptr<HuffmanNode> lChild, std::shared_ptr<HuffmanNode> rChild);
+        HuffmanNode(const HuffmanNode & rhs);
+        HuffmanNode(HuffmanNode && rhs);
+        HuffmanNode & operator=(const HuffmanNode & rhs);
+        HuffmanNode & operator=(const HuffmanNode && rhs);
         ~HuffmanNode();
         
         int getFrequency() const;
@@ -40,13 +44,16 @@ namespace BRDAMY004{
     
     class HuffmanTree{
     private:
-        //std::string textFile = "";
         std::unordered_map<char, int> characterMap;
         std::unordered_map<char, std::string> codeTable;
         std::shared_ptr<HuffmanNode> root;
         std::priority_queue<std::shared_ptr<HuffmanNode>, std::vector<std::shared_ptr<HuffmanNode>>, CompareQueue> treeQueue;
     public:
         HuffmanTree();
+        HuffmanTree(const HuffmanTree & rhs);
+        HuffmanTree(HuffmanTree && rhs);
+        HuffmanTree & operator=(const HuffmanTree & rhs);
+        HuffmanTree & operator=(const HuffmanTree && rhs);
         ~HuffmanTree();
         
         void fileReader(std::string fileName);
@@ -55,6 +62,8 @@ namespace BRDAMY004{
         void traverseTree(std::shared_ptr<HuffmanNode> node, int left, std::string code);
         void createCodeTable();
         void compressFile(std::string fileName, std::string outputFile);
+        int computeBytes(std::string codeString);
+        std::unordered_map<char, int> getCharacterMap();
     };
 }
 
