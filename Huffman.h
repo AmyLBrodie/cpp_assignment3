@@ -9,6 +9,7 @@
 #include <memory>
 #include <queue>
 #include <unordered_map>
+#include <vector>
 
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
@@ -26,8 +27,8 @@ namespace BRDAMY004{
         HuffmanNode(char l, int f, std::shared_ptr<HuffmanNode> lChild, std::shared_ptr<HuffmanNode> rChild);
         HuffmanNode(const HuffmanNode & rhs);
         HuffmanNode(HuffmanNode && rhs);
-        HuffmanNode & operator=(const HuffmanNode & rhs);
-        HuffmanNode & operator=(const HuffmanNode && rhs);
+        HuffmanNode & operator=(HuffmanNode & rhs);
+        HuffmanNode & operator=(HuffmanNode && rhs);
         ~HuffmanNode();
         
         int getFrequency() const;
@@ -47,13 +48,16 @@ namespace BRDAMY004{
         std::unordered_map<char, int> characterMap;
         std::unordered_map<char, std::string> codeTable;
         std::shared_ptr<HuffmanNode> root;
+        
+        std::string stringCode;
+        std::vector<unsigned char> bitStream;
         std::priority_queue<std::shared_ptr<HuffmanNode>, std::vector<std::shared_ptr<HuffmanNode>>, CompareQueue> treeQueue;
     public:
         HuffmanTree();
         HuffmanTree(const HuffmanTree & rhs);
         HuffmanTree(HuffmanTree && rhs);
-        HuffmanTree & operator=(const HuffmanTree & rhs);
-        HuffmanTree & operator=(const HuffmanTree && rhs);
+        HuffmanTree & operator=(HuffmanTree & rhs);
+        HuffmanTree & operator=(HuffmanTree && rhs);
         ~HuffmanTree();
         
         void fileReader(std::string fileName);
@@ -63,7 +67,11 @@ namespace BRDAMY004{
         void createCodeTable();
         void compressFile(std::string fileName, std::string outputFile);
         int computeBytes(std::string codeString);
+        std::string getStringCode();
         std::unordered_map<char, int> getCharacterMap();
+        std::shared_ptr<HuffmanNode> getRoot();
+        std::unordered_map<char, std::string> getCodeTable();
+        std::priority_queue<std::shared_ptr<HuffmanNode>, std::vector<std::shared_ptr<HuffmanNode>>, CompareQueue> getQueue();
     };
 }
 
